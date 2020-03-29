@@ -2,17 +2,22 @@ version: '3.7'
 # Most of these values should come from the .env file.
 
 services:
+  # User App
+  # web:
+
   # Django API
-  # Should be named 'api'. 'web' should be for the UI app.
-  web:
-    build: ./app
+  api:
+    build: ./api
+    # only use this command in non-production envs
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./app/:/usr/src/app/
+      - ./api/:/usr/src/app/
     ports:
-      - 8000:8000
+      - ${API_PORT}:8000
     env_file:
-      - ./.env.dev
+      - ./.env
+    networks:
+      - dod-network
     depends_on:
       - db
     
@@ -21,7 +26,9 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - ${DB_ADMIN_PORT}:8080
+    networks:
+      - dod-network
   
   # Postgres DB
   db:
@@ -29,9 +36,18 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER=hello_django
-      - POSTGRES_PASSWORD=hello_django
-      - POSTGRES_DB=hello_django_dev
+      - POSTGRES_USER=${SQL_USER}
+      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      - POSTGRES_DB=${SQL_DATABASE}
+    ports:
+      - ${SQL_PORT}:5432
+    networks:
+      - dod-network
+
+# Docker Networks
+networks:
+  dod-network:
+    driver: bridge
 
 # Save the data when containers are shut down
 volumes:

@@ -15,7 +15,7 @@ $ docker-compose up -d --build
 
 Acces the python container
 ```
-$ docker-compose exec web /bin/bash
+$ docker-compose exec api /bin/bash
 ```
 
 Edit the source code on your local device, not in the python container.
