@@ -1,6 +1,9 @@
 version: '3.7'
+# Most of these values should come from the .env file.
 
 services:
+  # Django API
+  # Should be named 'api'. 'web' should be for the UI app.
   web:
     build: ./app
     command: python manage.py runserver 0.0.0.0:8000
@@ -12,6 +15,15 @@ services:
       - ./.env.dev
     depends_on:
       - db
+    
+  # DB administration tool
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+  
+  # Postgres DB
   db:
     image: postgres:12.0-alpine
     volumes:
@@ -21,5 +33,6 @@ services:
       - POSTGRES_PASSWORD=hello_django
       - POSTGRES_DB=hello_django_dev
 
+# Save the data when containers are shut down
 volumes:
   postgres_data:
